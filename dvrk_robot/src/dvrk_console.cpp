@@ -136,6 +136,19 @@ dvrk::console::console(const double & publish_rate_in_seconds,
         dvrk::add_topics_teleop(*pub_bridge, mNameSpace + topic_name, name, version);
     }
 
+    const mtsIntuitiveResearchKitConsole::TeleopPSMNetList::iterator
+            teleopsPSMNetEnd = mConsole->mTeleopsPSMNet.end();
+    mtsIntuitiveResearchKitConsole::TeleopPSMNetList::iterator teleopPSMNetIter;
+    for (teleopPSMNetIter = mConsole->mTeleopsPSMNet.begin();
+         teleopPSMNetIter != teleopsPSMNetEnd;
+         ++teleopPSMNetIter) {
+        const std::string name = *teleopPSMNetIter;
+        std::string topic_name = *teleopPSMNetIter;
+        std::replace(topic_name.begin(), topic_name.end(), '-', '_');
+        dvrk::add_topics_teleop_psm_net(*pub_bridge, mNameSpace + topic_name, name, version);
+    }
+
+
     // digital inputs
     const std::string footPedalsNameSpace = mNameSpace + "footpedals/";
     typedef mtsIntuitiveResearchKitConsole::DInputSourceType DInputSourceType;
@@ -270,6 +283,17 @@ void dvrk::console::Connect(void)
         const std::string name = teleopIter->first;
         dvrk::connect_bridge_teleop(mBridgeName, name);
     }
+
+    const mtsIntuitiveResearchKitConsole::TeleopPSMNetList::iterator
+            teleopsPSMNetEnd = mConsole->mTeleopsPSMNet.end();
+    mtsIntuitiveResearchKitConsole::TeleopPSMNetList::iterator teleopPSMNetIter;
+    for (teleopPSMNetIter = mConsole->mTeleopsPSMNet.begin();
+         teleopPSMNetIter != teleopsPSMNetEnd;
+         ++teleopPSMNetIter) {
+        const std::string name = *teleopPSMNetIter;
+        dvrk::connect_bridge_teleop_psm_net(mBridgeName, name);
+    }
+
 
     // connect foot pedal, all arms use same
     mtsManagerLocal * componentManager = mtsManagerLocal::GetInstance();

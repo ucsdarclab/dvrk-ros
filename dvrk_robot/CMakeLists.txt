@@ -104,7 +104,7 @@ if (cisst_FOUND_AS_REQUIRED)
     )
     cisst_target_link_libraries (dvrk_utilities ${REQUIRED_CISST_LIBRARIES})
 
-  set (_EXECUTABLES dvrk_mtm_ros dvrk_psm_ros dvrk_ecm_ros dvrk_full_ros dvrk_console_json)
+  set (_EXECUTABLES dvrk_mtm_ros dvrk_psm_ros dvrk_ecm_ros dvrk_full_ros dvrk_console_json state_relay)
   foreach (_executable ${_EXECUTABLES})
     add_executable (${_executable} src/${_executable}.cpp)
     target_link_libraries (

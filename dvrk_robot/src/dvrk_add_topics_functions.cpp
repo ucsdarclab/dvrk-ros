@@ -650,6 +650,7 @@ void dvrk::add_topics_teleop(mtsROSBridge & bridge,
          ros_namespace + "/set_registration_rotation");
 }
 
+
 void dvrk::connect_bridge_teleop(const std::string & bridge_name,
                                  const std::string & teleop_component_name)
 {
@@ -659,6 +660,75 @@ void dvrk::connect_bridge_teleop(const std::string & bridge_name,
     componentManager->Connect(bridge_name, teleop_component_name + "-log",
                               teleop_component_name, "Setting");
 }
+
+void dvrk::add_topics_teleop_psm_net(mtsROSBridge & bridge,
+                                     const std::string & ros_namespace,
+                                     const std::string & teleop_psm_net_component_name,
+                                     const dvrk_topics_version::version version){
+
+    // Publish to PSM
+    bridge.AddPublisherFromCommandRead<prmStateJoint, sensor_msgs::JointState>
+            (teleop_psm_net_component_name, "SetPositionJaw",
+             ros_namespace + "/target_jaw");
+
+    switch (version) {
+        case dvrk_topics_version::v1_3_0:
+            bridge.AddPublisherFromCommandRead<prmPositionCartesianGet, geometry_msgs::Pose>
+                    (teleop_psm_net_component_name, "SetPositionCartesian",
+                     ros_namespace + "/target_position_cartesian");
+            break;
+        case dvrk_topics_version::crtk_alpha:
+            bridge.AddPublisherFromCommandRead<prmPositionCartesianGet, geometry_msgs::TransformStamped>
+                    (teleop_psm_net_component_name, "SetPositionCartesian",
+                     ros_namespace + "/target_position_cartesian");
+            break;
+        default:
+            bridge.AddPublisherFromCommandRead<prmPositionCartesianGet, geometry_msgs::Pose>
+                    (teleop_psm_net_component_name, "SetPositionCartesian",
+                     ros_namespace + "/target_position_cartesian");
+            break;
+    }
+
+    bridge.AddPublisherFromCommandRead<std::string, std_msgs::String>
+            (teleop_psm_net_component_name, "SetDesiredState",
+             ros_namespace + "/target_desired_state");
+
+
+    // Subscribe from PSM
+    bridge.AddSubscriberToCommandWrite<prmPositionJointSet, sensor_msgs::JointState>
+            (teleop_psm_net_component_name, "ReadPositionJaw",
+             ros_namespace + "/read_jaw");
+
+    switch (version) {
+        case dvrk_topics_version::crtk_alpha:
+            bridge.AddSubscriberToCommandWrite<prmPositionCartesianSet, geometry_msgs::TransformStamped>
+                    (teleop_psm_net_component_name, "ReadCurrentPositionCartesian",
+                     ros_namespace + "/read_position_cartesian");
+            break;
+        default:
+            bridge.AddSubscriberToCommandWrite<prmPositionCartesianSet, geometry_msgs::PoseStamped>
+                    (teleop_psm_net_component_name, "ReadCurrentPositionCartesian",
+                     ros_namespace + "/read_position_cartesian");
+             break;
+    }
+
+    bridge.AddSubscriberToCommandWrite<std::string, std_msgs::String>
+            (teleop_psm_net_component_name, "ReadDesiredState",
+             ros_namespace + "/read_desired_robot_state");
+
+    bridge.AddSubscriberToCommandWrite<std::string, std_msgs::String>
+            (teleop_psm_net_component_name, "ReadCurrentState",
+             ros_namespace + "/read_current_robot_state");
+
+}
+
+void dvrk::connect_bridge_teleop_psm_net(const std::string & bridge_name,
+                                         const std::string & teleop_psm_net_component_name){
+    mtsManagerLocal * componentManager = mtsManagerLocal::GetInstance();
+    componentManager->Connect(bridge_name, teleop_psm_net_component_name,
+                              teleop_psm_net_component_name, "ROS");
+}
+
 
 void dvrk::add_topics_suj(mtsROSBridge & bridge,
                           const std::string & ros_namespace,

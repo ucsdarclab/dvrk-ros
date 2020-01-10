@@ -145,6 +145,14 @@ namespace dvrk {
     void connect_bridge_teleop(const std::string & bridge_name,
                                const std::string & teleop_component_name);
 
+    void add_topics_teleop_psm_net(mtsROSBridge & bridge,
+                                   const std::string & ros_namespace,
+                                   const std::string & teleop_component_name,
+                                   const dvrk_topics_version::version version);
+
+    void connect_bridge_teleop_psm_net(const std::string & bridge_name,
+                                       const std::string & teleop_component_name);
+
     /*! Add all the topics related to the setup joints (SUJ) */
     void add_topics_suj(mtsROSBridge & bridge,
                         const std::string & ros_namespace,
