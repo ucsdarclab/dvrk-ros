@@ -29,6 +29,7 @@ const std::string bridgeNamePrefix = "dVRKIOBridge";
 dvrk::console::console(const double & publish_rate_in_seconds,
                        const double & tf_rate_in_seconds,
                        const std::string & ros_namespace,
+                       const std::string & ros_node_name,
                        mtsIntuitiveResearchKitConsole * mts_console,
                        const dvrk_topics_version::version version):
     mNameSpace(ros_namespace),
@@ -39,7 +40,7 @@ dvrk::console::console(const double & publish_rate_in_seconds,
     mtsManagerLocal * componentManager = mtsManagerLocal::GetInstance();
 
     // create all ROS bridges
-    std::string bridgeName = "sawIntuitiveResearchKit" + ros_namespace;
+    std::string bridgeName = ros_node_name;
     bridgeName = ros::names::clean(bridgeName);
     std::replace(bridgeName.begin(), bridgeName.end(), '/', '_');
     std::replace(bridgeName.begin(), bridgeName.end(), '-', '_');

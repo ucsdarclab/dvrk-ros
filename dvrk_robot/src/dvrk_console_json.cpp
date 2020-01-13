@@ -78,6 +78,7 @@ int main(int argc, char ** argv)
     cmnCommandLineOptions options;
     std::string jsonMainConfigFile;
     std::string rosNamespace = "dvrk/";
+    std::string rosNodeName = "/sawIntuitiveResearchKitdvrk";
     double rosPeriod = 10.0 * cmn_ms;
     double tfPeriod = 20.0 * cmn_ms;
     std::list<std::string> jsonIOConfigFiles;
@@ -92,6 +93,10 @@ int main(int argc, char ** argv)
     options.AddOptionOneValue("n", "ros-namespace",
                               "ROS namespace to prefix all topics, must end with \"/\" if not empty (default is \"dvrk/\")",
                               cmnCommandLineOptions::OPTIONAL_OPTION, &rosNamespace);
+
+    options.AddOptionOneValue("N", "ros-nodename",
+                              "ROS node name (default is \"/sawIntuitiveResearchKitdvrk\")",
+                              cmnCommandLineOptions::OPTIONAL_OPTION, &rosNodeName);
 
     options.AddOptionOneValue("p", "ros-period",
                               "period in seconds to read all arms/teleop components and publish (default 0.01, 10 ms, 100Hz).  There is no point to have a period higher than the arm component's period",
@@ -171,7 +176,7 @@ int main(int argc, char ** argv)
     //
     // this also adds a mtsROSBridge that performs the ros::spinOnce
     // in a separate thread as fast possible
-    dvrk::console * consoleROS = new dvrk::console(rosPeriod, tfPeriod, rosNamespace,
+    dvrk::console * consoleROS = new dvrk::console(rosPeriod, tfPeriod, rosNamespace, rosNodeName,
                                                    console, versionEnum);
     // IOs
     const std::list<std::string>::const_iterator end = jsonIOConfigFiles.end();
